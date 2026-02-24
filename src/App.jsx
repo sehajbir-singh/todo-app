@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -11,53 +11,97 @@ import { v4 as uuidv4 } from 'uuid';
 function App() {
   const [count, setCount] = useState(0);
   const [todo, setTodo] = useState(""); // it is only a input todo.
-  const [todos, setTodos] = useState([]); //it holds all tasks.
+
+
+  const [todos, setTodos] = useState(()=>{
+    try {
+    const raw = localStorage.getItem("todos");
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    console.log(parsed)
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.map(t => {
+      // normalize isCompleted safely (handle boolean or "true"/"false" string)
+      const isCompleted =
+        typeof t.isCompleted === "boolean"
+          ? t.isCompleted
+          : t.isCompleted === "true";
+          console.log(t.isCompleted === "true")
+
+      return {
+        id: t.id ?? uuidv4(),             // preserve id or generate fallback
+        todo: typeof t.todo === "string" ? t.todo : "",
+        isCompleted,
+      };
+    });
+  } catch (err) {
+    console.error("Error reading todos from localStorage:", err);
+    return [];
+  }
+
+  }); //it holds all tasks.
+
+
+  useEffect(() => {
+
+    try{
+      localStorage.setItem("todos", JSON.stringify(todos))
+    }catch(err){
+      console.error("Failed to write todos to localStorage:", err);
+
+
+    }
+  }, [todos])
+  
+
+ 
 
   const startEdit = (e, id)=> {
     let t = todos.filter(t=>{return t.id === id})
     setTodo(t[0].todo)
     
     setTodos(previousTodos => previousTodos.filter(t => t.id !== id));
-
-    
+   
   }
+
+
 
   const deleteTask = (id) =>{
   
     
-    
+     
     if(confirm("Are you sure you wanna delete this task?")){
       setTodos(previousTodos => previousTodos.filter(t => t.id !== id));
+     
     }
-    // let index = todos.findIndex(item=>{
-    //   return item.id === id;
-    // })
-
-
+    
   }
 
   function handleSave() {
-    setTodos([...todos, {id: uuidv4(), todo, isCompleted: false }]);
+    const text = todo.trim();
+    if (!text) return;
+    setTodos([...todos, {id: uuidv4(), todo: text, isCompleted: false }]);
     setTodo("");
+    
+
   }
 
   const handleChange=(e)=>{
     setTodo(e.target.value);
-    console.log(todos)
+
+    
   }
 
-  const handleCheckbox= (e)=> {
-    let id = e.target.name;
-    console.log(id)
-    let index = todos.findIndex(item=>{
-      return item.id === id;
-    })
-
-    let newTodos = [...todos];
-    newTodos[index].isCompleted = !newTodos[index].isCompleted;
-    setTodos(newTodos)
-    console.log(newTodos)
-
+  const handleCheckbox= (id)=> {
+   setTodos(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, isCompleted: !item.isCompleted } : item
+      )
+    );
+   
+  
   }
 
 
@@ -93,7 +137,7 @@ function App() {
             return <div key={item.id} className="todo flex flex-wrap m-2 w-1/2 justify-between">
               <div className="flex gap-5">
 
-              <input type="checkbox" onChange={handleCheckbox} value={item.isCompleted} name={item.id} id="" />
+              <input type="checkbox" checked={!!item.isCompleted} onChange={()=>{handleCheckbox(item.id)}} />
 
               <div className={item.isCompleted ? "line-through" : ""}>
                 {item.todo}
@@ -102,7 +146,7 @@ function App() {
               
 
               </div>
-              <div className="buttons">
+              <div className="buttons flex">
                 <button
                   onClick={(e)=>{startEdit(e, item.id)}}
                   className="bg-violet-400 cursor-pointer hover:bg-violet-950 p-3 py-1 mx-1 rounded-3xl text-sm text-white font-bold transition-all duration-100"
