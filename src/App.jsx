@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 function App() {
   const [count, setCount] = useState(0);
   const [todo, setTodo] = useState(""); // it is only a input todo.
+  const [showfinished, setshowFinished] = useState()
 
 
   const [todos, setTodos] = useState(()=>{
@@ -51,13 +52,14 @@ function App() {
     }catch(err){
       console.error("Failed to write todos to localStorage:", err);
 
-
     }
   }, [todos])
+
+  const toggleHandler = () =>{
+    setshowFinished(!showfinished)
+  }
   
-
- 
-
+    
   const startEdit = (e, id)=> {
     let t = todos.filter(t=>{return t.id === id})
     setTodo(t[0].todo)
@@ -65,6 +67,8 @@ function App() {
     setTodos(previousTodos => previousTodos.filter(t => t.id !== id));
    
   }
+
+
 
 
 
@@ -108,38 +112,45 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto bg-violet-100 rounded-2xl m-5 p-5 min-h-[70vh]">
-        <div className="addTodo my-5">
-          <h1 className="text-lg font-bold">Add a Todo</h1>
+      <div className="container mx-auto bg-violet-100 rounded-2xl m-5 p-5 min-h-[70vh] w-1/2 ">
+
+        <h1 className="font-bold text-center text-2xl" >DayDo - Do all your tasks.</h1>  
+        <div className="addTodo my-5 flex flex-col">
+          <h1 className="text-lg font-bold my-1">Add a Todo</h1>
 
           <input
             onChange={handleChange}
             value={todo}
             type="text"
-            className="bg-white w-1/2"
+            className="bg-white w-full my-3"
           />
 
           <span>
             <button
               onClick={handleSave}
-              className="bg-violet-400 cursor-pointer hover:shadow-2xl dark:bg-surface-dark hover:bg-violet-950 p-3 py-1 mx-6 rounded-3xl text-sm text-white font-bold transition-all duration-100"
+              disabled={todo.length<=3}
+              className="bg-violet-400 gap-4 disabled:bg-gray-400 cursor-pointer enabled:hover:shadow-2xl enabled:dark:bg-surface-dark hover:bg-violet-800 p-3 py-1 rounded-3xl text-sm text-white font-bold transition-all duration-100 w-full my-2"
             >
               Save
             </button>
           </span>
         </div>
 
+
+        <input type="checkbox" onChange={toggleHandler}  checked={showfinished} className="my-3" /> Show finished.
+
         <h1 className="text-lg font-bold">Your Todos</h1>
         <div className="todos">
           {todos.length === 0 && <><div className="m-5">No todos to display.</div></>}
           {todos.map(item=>{
 
-            return <div key={item.id} className="todo flex flex-wrap m-2 w-1/2 justify-between">
+
+            return (showfinished || !item.isCompleted) && <div key={item.id} className="todo flex flex-row m-2 w-1/2 justify-between">
               <div className="flex gap-5">
 
               <input type="checkbox" checked={!!item.isCompleted} onChange={()=>{handleCheckbox(item.id)}} />
 
-              <div className={item.isCompleted ? "line-through" : ""}>
+              <div className={item.isCompleted ? "line-through" : "" }>
                 {item.todo}
 
               </div>
