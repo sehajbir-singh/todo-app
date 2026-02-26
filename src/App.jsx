@@ -114,7 +114,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto bg-violet-100 rounded-2xl m-5 p-5 min-h-[70vh] w-1/2 ">
+      <div className=" md:container md:mx-auto bg-violet-100 rounded-2xl m-5 p-5 min-h-[70vh] md:w-1/2 ">
 
         <h1 className="font-bold text-center text-2xl" >DayDo - Do all your tasks.</h1>  
         <div className="addTodo my-5 flex flex-col">
@@ -139,7 +139,11 @@ function App() {
         </div>
 
 
-        <input type="checkbox" onChange={toggleHandler}  checked={showfinished} className="my-3" /> Show finished.
+        <div className="flex items-center ps-4 bg-neutral-primary-soft border border-gray-400 rounded-xl shadow-md p-2 m-5">
+          <input type="checkbox" onChange={toggleHandler}  checked={showfinished} className="my-3 mx-3 w-4 h-4 focus:ring-2 focus:ring-brand-soft focus:ring-blue-300 " /> Show finished.
+
+        </div>
+
 
         <h1 className="text-lg font-bold">Your Todos</h1>
         <div className="todos">
@@ -147,7 +151,7 @@ function App() {
           {todos.map(item=>{
 
 
-            return (showfinished || !item.isCompleted) && <div key={item.id} className="todo flex flex-row m-2 w-1/2 justify-between">
+            return (showfinished || !item.isCompleted) && <div key={item.id} className="todo flex flex-row m-2 md:w-1/2 justify-between">
               <div className="flex gap-5">
 
               <input type="checkbox" checked={!!item.isCompleted} onChange={()=>{handleCheckbox(item.id)}} />
