@@ -5,6 +5,8 @@ import "./App.css";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import { v4 as uuidv4 } from 'uuid';
+import { FaRegEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
  // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
@@ -122,9 +124,9 @@ function App() {
             onChange={handleChange}
             value={todo}
             type="text"
-            className="bg-white w-full my-3"
+            className="bg-white w-full my-3 rounded-full p-2.5 px-5"
           />
-
+ 
           <span>
             <button
               onClick={handleSave}
@@ -162,13 +164,13 @@ function App() {
                   onClick={(e)=>{startEdit(e, item.id)}}
                   className="bg-violet-400 cursor-pointer hover:bg-violet-950 p-3 py-1 mx-1 rounded-3xl text-sm text-white font-bold transition-all duration-100"
                 >
-                  Edit
+                  <FaRegEdit />
                 </button>
                 <button
                   onClick={()=>{deleteTask(item.id)}}
                   className="bg-violet-400 cursor-pointer hover:bg-violet-950 p-3 py-1 mx-1 rounded-3xl text-sm text-white font-bold transition-all duration-100"
                 >
-                  Delete
+                  <MdDelete />
                 </button>
               </div> 
             </div>;
